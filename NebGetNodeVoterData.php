@@ -4,10 +4,10 @@
  * Note: This code has not been tested but has been taken from a larger repo (with a lot of edits) which has been confirmed as working.
  * This class works with a neb node using it's api via curl.
 */
-$fromAddress='n1XXXX';//The address making the request and must also have it's keystore located on the server.
-$nodeId='natoshi1';//The node id that you want to check.
+$fromAddress = 'n1XXXX';//The address making the request and must also have it's keystore located on the server.
+$nodeId = 'natoshi1';//The node id that you want to check.
 $voterData = new voterData();//Set class as a var
-$voterData->getVoterData($fromAddress,$nodeId);//Call the function
+$voterData->getVoterData($fromAddress, $nodeId);//Call the function
 
 class voterData
 {
@@ -35,7 +35,9 @@ class voterData
 			//$this->verboseLog($this->voterData);
 			$this->storeMessages('getVoterData()', "Total NAX: {$this->totalNAXStakedToNode}", 'info');
 			$this->storeMessages('getVoterData()', "$this->voterData", 'info');
-		}
+			return array($this->totalNAXStakedToNode, $this->numberOfAddressesVoting);//Place data in array to return it via the initial call. Alternatively, this can be commented out and grab the locally stored variables.
+		} else //Something didn't work...
+			return null;
 	}
 
 	private function curlRequest($url, $req = null, $timeout = 15)
