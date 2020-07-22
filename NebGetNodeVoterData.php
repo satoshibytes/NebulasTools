@@ -4,9 +4,9 @@
  * Note: This code has not been tested but has been taken from a larger repo (with a lot of edits) which has been confirmed as working.
  * This class works with a neb node using it's api via curl.
 */
-$fromAddress = 'n1XXXX';//The address making the request and must also have it's keystore located on the server.
+$fromAddress = 'n1XXXX';//The address making the request and must also have it's keystore located on the server to sign the request.
 $nodeId = 'natoshi1';//The node id that you want to check.
-$voterData = new voterData();//Set class as a var
+$voterData = new voterData();//Set class
 $voterData->getVoterData($fromAddress, $nodeId);//Call the function
 
 class voterData
@@ -17,7 +17,7 @@ class voterData
 
 	public function getVoterData($fromAddress, $nodeId)//Get a list of voters and the total amount of NAX staked.
 	{
-		$data = '{"from":"' . $fromAddress . '","to":"n214bLrE3nREcpRewHXF7qRDWCcaxRSiUdw","value":"0","nonce":1,"gasPrice":"1000000000000","gasLimit":"200000","contract":{"function":"getNodeVoteStatistic","args":"[\"' . $nodeId . '\"]"}}';
+		$data = '{"from":"' . $fromAddress . '","to":"n214bLrE3nREcpRewHXF7qRDWCcaxRSiUdw","value":"0","nonce":1,"gasPrice":"1000000000000","gasLimit":"200000","contract":{"function":"getNodeVoteStatistic","args":"[\"' . $nodeId . '\"]"}}';//getNodeVoteStatistic return a array of voters addresses and the staked quantity.
 		$curlRequest = $this->curlRequest('https://mainnet.nebulas.io/v1/user/call', $data, $timeout = 15);
 //set the data to an array
 		if ($curlRequest['status'] == 'success') {
