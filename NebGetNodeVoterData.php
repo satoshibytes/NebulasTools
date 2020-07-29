@@ -4,8 +4,8 @@
  * Note: This code has not been tested but has been taken from a larger repo (with a lot of edits) which has been confirmed as working.
  * This class works with a neb node using it's api via curl.
 */
-$fromAddress = 'n1XXXX';//The address making the request and must also have it's keystore located on the server to sign the request.
-$nodeId = 'natoshi1';//The node id that you want to check.
+$fromAddress = 'n1KxWR8ycXg7Kb9CPTtNjTTEpvka269PniB';//The address making the request and must also have it's keystore located on the server to sign the request.
+$nodeId = 'everstake';//The node id that you want to check.
 $voterData = new voterData();//Set class
 $voterData->getVoterData($fromAddress, $nodeId);//Call the function
 
@@ -20,9 +20,12 @@ class voterData
 		$data = '{"from":"' . $fromAddress . '","to":"n214bLrE3nREcpRewHXF7qRDWCcaxRSiUdw","value":"0","nonce":1,"gasPrice":"1000000000000","gasLimit":"200000","contract":{"function":"getNodeVoteStatistic","args":"[\"' . $nodeId . '\"]"}}';//getNodeVoteStatistic return a array of voters addresses and the staked quantity.
 		$curlRequest = $this->curlRequest('https://mainnet.nebulas.io/v1/user/call', $data, $timeout = 15);
 //set the data to an array
+
 		if ($curlRequest['status'] == 'success') {
 //Requires multiple trips through the array to get the data we want (for some reason?)
 			$dataResult = json_decode($curlRequest['data'], true);
+			echo"Data Result:";
+			echo print_r($dataResult);
 			$dataResult = $dataResult['result']['result'];
 			$dataResult = json_decode($dataResult, true);
 
@@ -33,7 +36,7 @@ class voterData
 			}
 			//$this->verboseLog("Total NAX: {$this->totalNAX}");
 			//$this->verboseLog($this->voterData);
-			$this->storeMessages('getVoterData()', "Total NAX: {$this->totalNAXStakedToNode}", 'info');
+			$this->storeMessages('getVoterData()', "Total NAX for node {$nodeId}: {$this->totalNAXStakedToNode}", 'info');
 			$this->storeMessages('getVoterData()', "$this->voterData", 'info');
 			return array($this->totalNAXStakedToNode, $this->numberOfAddressesVoting);//Place data in array to return it via the initial call. Alternatively, this can be commented out and grab the locally stored variables.
 		} else //Something didn't work...
@@ -59,10 +62,12 @@ class voterData
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
 			curl_setopt($ch, CURLOPT_POST, true);
 		}
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		//curl_setopt_array($ch, $curlOptions);
 		$data = curl_exec($ch);
 		$errors = curl_error($ch);
 		$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
 		if (curl_errno($ch)) {
 			$this->storeMessages('curlRequest()', 'Curl request failed. URL: ' . $url, 'error');
 		} else {//Successful response
